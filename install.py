@@ -53,26 +53,13 @@ def make_executable(path):
 
 
 def install():
-	path_to_binary = shutil.which('adjust-brightness')
-
 	LOCAL_BIN = os.path.expanduser('~/.local/bin/')
 	LOCAL_APPLICATIONS = os.path.expanduser('~/.local/share/applications')
 	LOCAL_ICONS = os.path.expanduser('~/.local/share/icons/hicolor/scalable/apps')
 	DESKTOP_FILE_FINAL_PATH = os.path.join(LOCAL_APPLICATIONS, 'adjust-brightness.desktop')
 	ICON_FILE_FINAL_PATH = os.path.join(LOCAL_ICONS, 'adjust-brightness.svg')
+	path_to_binary = os.path.join(LOCAL_BIN, 'adjust-brightness')
 	THIS_SCRIPT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
-	BINARY_PATH_AUTO_SET = False
-
-	if path_to_binary is None:
-		# Path to binary not found; prompt for it
-		if input('Have you installed the binary already? [Y/n] ').lower() == 'n':
-			path_to_binary = os.path.join(LOCAL_BIN, 'adjust-brightness')
-			BINARY_PATH_AUTO_SET = True
-		else:
-			path_to_binary = prompt_path()
-
-	if not BINARY_PATH_AUTO_SET:
-		path_to_binary = find_correct_binary_path(path_to_binary)
 
 	# Install desktop file
 
@@ -90,11 +77,10 @@ def install():
 		print(f'Making {LOCAL_ICONS}...')
 		os.makedirs(LOCAL_ICONS)
 
-	if BINARY_PATH_AUTO_SET:
-		if os.path.isfile(path_to_binary):
-			if input(f'Error, file "{path_to_binary}" exists. Continue anyway? [y/N] ').lower() != 'y':
-				print('Exiting...')
-				exit(1)
+	if os.path.isfile(path_to_binary):
+		if input(f'Error, file "{path_to_binary}" exists. Continue anyway? [y/N] ').lower() != 'y':
+			print('Exiting...')
+			exit(1)
 
 	if os.path.isfile(DESKTOP_FILE_FINAL_PATH):
 		if input(f'Error, file "{DESKTOP_FILE_FINAL_PATH}" exists. Continue anyway? [y/N] ').lower() != 'y':
@@ -118,25 +104,25 @@ def install():
 	desktop_content['Desktop Entry']['Comment'] = 'Qt GUI frontend for adjusting screen brightness using xrandr'
 	desktop_content['Desktop Entry']['Exec'] = path_to_binary
 	desktop_content['Desktop Entry']['Icon'] = ICON_FILE_FINAL_PATH
-	desktop_content['Desktop Entry']['Categories'] = 'Utilities;'
+	desktop_content['Desktop Entry']['Terminal'] = 'false'
+	desktop_content['Desktop Entry']['Categories'] = 'System;Utility;Application;'
 	desktop_content['Desktop Entry']['Keywords'] = 'brightness;xrandr;adjust;display;screen;'
 
 	print('Writing desktop file...')
 	with open(DESKTOP_FILE_FINAL_PATH, 'w') as f:
-		desktop_content.write(f)
+		desktop_content.write(f, space_around_delimiters=False)
 
 	print('Copying icon...')
 	if os.path.isfile(ICON_FILE_FINAL_PATH):
 		os.remove(ICON_FILE_FINAL_PATH)
 	shutil.copyfile(os.path.join(THIS_SCRIPT_DIRECTORY, 'icon.svg'), ICON_FILE_FINAL_PATH)
 
-	if BINARY_PATH_AUTO_SET:
-		print('Setting binary permissions and copying...')
-		main_script_path = os.path.join(THIS_SCRIPT_DIRECTORY, 'main.py')
-		if os.path.isfile(path_to_binary):
-			os.remove(path_to_binary)
-		shutil.copyfile(main_script_path, path_to_binary)
-		make_executable(path_to_binary)
+	print('Setting binary permissions and copying...')
+	main_script_path = os.path.join(THIS_SCRIPT_DIRECTORY, 'main.py')
+	if os.path.isfile(path_to_binary):
+		os.remove(path_to_binary)
+	shutil.copyfile(main_script_path, path_to_binary)
+	make_executable(path_to_binary)
 
 
 def uninstall():
