@@ -4,7 +4,7 @@ import shutil
 import subprocess
 import logging
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QStyle, QStyleOptionSlider
 from PyQt5.QtCore import QRect, QPoint, Qt
@@ -53,10 +53,10 @@ class LabeledSlider(QtWidgets.QWidget):
 
 		if orientation == Qt.Horizontal:
 			self.sl.setTickPosition(QtWidgets.QSlider.TicksBelow)
-			self.sl.setMinimumWidth(300) # just to make it easier to read
+			self.sl.setMinimumWidth(300)  # just to make it easier to read
 		else:
 			self.sl.setTickPosition(QtWidgets.QSlider.TicksLeft)
-			self.sl.setMinimumHeight(300) # just to make it easier to read
+			self.sl.setMinimumHeight(300)  # just to make it easier to read
 		self.sl.setTickInterval(interval)
 		self.sl.setSingleStep(1)
 
