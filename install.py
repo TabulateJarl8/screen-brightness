@@ -70,13 +70,12 @@ def install():
 	desktop_content.optionxform = str
 	desktop_content.add_section('Desktop Entry')
 
-	desktop_content['Desktop Entry']['Version'] = '1.0'
-	desktop_content['Desktop Entry']['Type'] = 'Application'
 	desktop_content['Desktop Entry']['Name'] = 'Screen Brightness'
 	desktop_content['Desktop Entry']['Comment'] = 'Qt GUI frontend for adjusting screen brightness using xrandr'
 	desktop_content['Desktop Entry']['Exec'] = path_to_binary
-	desktop_content['Desktop Entry']['Icon'] = ICON_FILE_FINAL_PATH
+	desktop_content['Desktop Entry']['Icon'] = os.path.splitext(os.path.basename(ICON_FILE_FINAL_PATH))[0]
 	desktop_content['Desktop Entry']['Terminal'] = 'false'
+	desktop_content['Desktop Entry']['Type'] = 'Application'
 	desktop_content['Desktop Entry']['Categories'] = 'System;Utility;Application;'
 	desktop_content['Desktop Entry']['Keywords'] = 'brightness;xrandr;adjust;display;screen;'
 
