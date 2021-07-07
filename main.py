@@ -14,37 +14,35 @@ logging.basicConfig(level=logging.INFO)
 
 
 class LabeledSlider(QtWidgets.QWidget):
-	def __init__(self, minimum, maximum, interval=1, orientation=Qt.Horizontal,
-			labels=None, parent=None, value=None):
+	def __init__(self, minimum, maximum, interval=1, orientation=Qt.Horizontal, labels=None, parent=None, value=None):
 		super(LabeledSlider, self).__init__(parent=parent)
 
-		levels=range(minimum, maximum+interval, interval)
+		levels = range(minimum, maximum + interval, interval)
 		if labels is not None:
 			if not isinstance(labels, (tuple, list)):
 				raise Exception("<labels> is a list or tuple.")
 			if len(labels) != len(levels):
 				raise Exception("Size of <labels> doesn't match levels.")
-			self.levels=list(zip(levels,labels))
+			self.levels = list(zip(levels, labels))
 		else:
-			self.levels=list(zip(levels,map(str,levels)))
+			self.levels = list(zip(levels, map(str, levels)))
 
-		if orientation==Qt.Horizontal:
-			self.layout=QtWidgets.QVBoxLayout(self)
-		elif orientation==Qt.Vertical:
-			self.layout=QtWidgets.QHBoxLayout(self)
+		if orientation == Qt.Horizontal:
+			self.layout = QtWidgets.QVBoxLayout(self)
+		elif orientation == Qt.Vertical:
+			self.layout = QtWidgets.QHBoxLayout(self)
 		else:
 			raise Exception("<orientation> wrong.")
 
 		# gives some space to print labels
-		self.left_margin=10
-		self.top_margin=10
-		self.right_margin=10
-		self.bottom_margin=10
+		self.left_margin = 10
+		self.top_margin = 10
+		self.right_margin = 10
+		self.bottom_margin = 10
 
-		self.layout.setContentsMargins(self.left_margin,self.top_margin,
-				self.right_margin,self.bottom_margin)
+		self.layout.setContentsMargins(self.left_margin, self.top_margin, self.right_margin, self.bottom_margin)
 
-		self.sl=QtWidgets.QSlider(orientation, self)
+		self.sl = QtWidgets.QSlider(orientation, self)
 		self.sl.setMinimum(minimum)
 		self.sl.setMaximum(maximum)
 
@@ -53,7 +51,7 @@ class LabeledSlider(QtWidgets.QWidget):
 		else:
 			self.sl.setValue(value)
 
-		if orientation==Qt.Horizontal:
+		if orientation == Qt.Horizontal:
 			self.sl.setTickPosition(QtWidgets.QSlider.TicksBelow)
 			self.sl.setMinimumWidth(300) # just to make it easier to read
 		else:
@@ -66,65 +64,57 @@ class LabeledSlider(QtWidgets.QWidget):
 
 	def paintEvent(self, e):
 
-		super(LabeledSlider,self).paintEvent(e)
+		super(LabeledSlider, self).paintEvent(e)
 
-		style=self.sl.style()
-		painter=QPainter(self)
-		st_slider=QStyleOptionSlider()
+		style = self.sl.style()
+		painter = QPainter(self)
+		st_slider = QStyleOptionSlider()
 		st_slider.initFrom(self.sl)
-		st_slider.orientation=self.sl.orientation()
+		st_slider.orientation = self.sl.orientation()
 
-		length=style.pixelMetric(QStyle.PM_SliderLength, st_slider, self.sl)
-		available=style.pixelMetric(QStyle.PM_SliderSpaceAvailable, st_slider, self.sl)
+		length = style.pixelMetric(QStyle.PM_SliderLength, st_slider, self.sl)
+		available = style.pixelMetric(QStyle.PM_SliderSpaceAvailable, st_slider, self.sl)
 
 		for v, v_str in self.levels:
 
 			# get the size of the label
-			rect=painter.drawText(QRect(), Qt.TextDontPrint, v_str)
+			rect = painter.drawText(QRect(), Qt.TextDontPrint, v_str)
 
-			if self.sl.orientation()==Qt.Horizontal:
+			if self.sl.orientation() == Qt.Horizontal:
 				# I assume the offset is half the length of slider, therefore
 				# + length//2
-				x_loc=QStyle.sliderPositionFromValue(self.sl.minimum(),
-						self.sl.maximum(), v, available)+length//2
+				x_loc = QStyle.sliderPositionFromValue(self.sl.minimum(), self.sl.maximum(), v, available) + length // 2
 
 				# left bound of the text = center - half of text width + L_margin
-				left = x_loc-rect.width() // 2 + self.left_margin
+				left = x_loc - rect.width() // 2 + self.left_margin
 				# sligtly strange behavior, sometimes first text breaks
 				bottom = self.rect().height() // 2 + self.bottom_margin + 3
 
 				# enlarge margins if clipping
-				if v==self.sl.minimum():
-					if left<=0:
-						self.left_margin=rect.width()//2-x_loc
-					if self.bottom_margin<=rect.height():
-						self.bottom_margin=rect.height()
+				if v == self.sl.minimum():
+					if left <= 0:
+						self.left_margin = rect.width() // 2 - x_loc
+					if self.bottom_margin <= rect.height():
+						self.bottom_margin = rect.height()
 
-					self.layout.setContentsMargins(self.left_margin,
-							self.top_margin, self.right_margin,
-							self.bottom_margin)
+					self.layout.setContentsMargins(self.left_margin, self.top_margin, self.right_margin, self.bottom_margin)
 
-				if v==self.sl.maximum() and rect.width()//2>=self.right_margin:
-					self.right_margin=rect.width()//2
-					self.layout.setContentsMargins(self.left_margin,
-							self.top_margin, self.right_margin,
-							self.bottom_margin)
+				if v == self.sl.maximum() and rect.width() // 2 >= self.right_margin:
+					self.right_margin = rect.width() // 2
+					self.layout.setContentsMargins(self.left_margin, self.top_margin, self.right_margin, self.bottom_margin)
 
 			else:
-				y_loc=QStyle.sliderPositionFromValue(self.sl.minimum(),
-						self.sl.maximum(), v, available, upsideDown=True)
+				y_loc = QStyle.sliderPositionFromValue(self.sl.minimum(), self.sl.maximum(), v, available, upsideDown=True)
 
 				bottom = y_loc + length // 2 + rect.height() // 2 + self.top_margin - 3
 				# there is a 3 px offset that I can't attribute to any metric
 
-				left=self.left_margin-rect.width()
-				if left<=0:
-					self.left_margin=rect.width()+2
-					self.layout.setContentsMargins(self.left_margin,
-							self.top_margin, self.right_margin,
-							self.bottom_margin)
+				left = self.left_margin - rect.width()
+				if left <= 0:
+					self.left_margin = rect.width() + 2
+					self.layout.setContentsMargins(self.left_margin, self.top_margin, self.right_margin, self.bottom_margin)
 
-			pos=QPoint(left, bottom)
+			pos = QPoint(left, bottom)
 			painter.drawText(pos, v_str)
 
 		return
@@ -149,9 +139,8 @@ class Ui_MainWindow(object):
 		self.buttonBox = QtWidgets.QDialogButtonBox(MainWindow)
 		self.buttonBox.setGeometry(QtCore.QRect(30, 240, 341, 32))
 		self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-		self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+		self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
 		self.buttonBox.setObjectName("buttonBox")
-
 
 		self.retranslateUi(MainWindow)
 		self.buttonBox.accepted.connect(MainWindow.accept)
@@ -160,11 +149,9 @@ class Ui_MainWindow(object):
 		self.comboBox.currentTextChanged.connect(self.resetCurrentSliderValue)
 		QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-
 	def retranslateUi(self, MainWindow):
 		_translate = QtCore.QCoreApplication.translate
 		MainWindow.setWindowTitle(_translate("MainWindow", "Adjust Screen Brightness"))
-
 
 	def updateDisplayOptions(self):
 		# xrandr | grep -w connected | cut -f '1' -d ' '
@@ -184,12 +171,10 @@ class Ui_MainWindow(object):
 		for device in devices:
 			self.comboBox.addItem(device)
 
-
 	def setBrightness(self, device, value):
 		# xrandr --output DP-0 --brightness 1
 		logging.info(f'Setting brightness to {value / 10}\n')
 		subprocess.check_output(['xrandr', '--output', device, '--brightness', str(value / 10)])
-
 
 	def getBrightness(self, device):
 		# xrandr --verbose | grep "DP-0" -A5 | grep -m 1 -i brightness | cut -f2 -d ' '
@@ -207,10 +192,8 @@ class Ui_MainWindow(object):
 
 		return int(float(brightness) * 10)
 
-
 	def accept(self):
 		self.setBrightness(str(self.comboBox.currentText()), int(self.slider.sl.value()))
-
 
 	def resetCurrentSliderValue(self):
 		logging.info('Resetting slider value to current device brightness\n')
@@ -237,4 +220,3 @@ if __name__ == '__main__':
 	frame = MainUiWindow()
 	frame.show()
 	sys.exit(app.exec_())
-
