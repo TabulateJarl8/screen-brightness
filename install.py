@@ -9,36 +9,8 @@ import subprocess
 # Script to install/uninstall screen adjust-brightness program
 
 
-def prompt_path_validity(path):
-	print(path)
-	return False if input('Is this the path to the script? [Y/n] ').lower() == 'n' else True
-
-
-def prompt_path():
-	while True:
-		path = os.path.abspath(input('Please input path to binary: '))
-		if os.path.isfile(path):
-			break
-		else:
-			print('Invalid path')
-	print()
-	return path
-
-
-def find_correct_binary_path(path_to_binary):
-	while True:
-		if prompt_path_validity(path_to_binary) is False:
-			# Incorrect path detected, prompt for correct one
-			path_to_binary = prompt_path()
-		else:
-			break
-
-	return path_to_binary
-
-
 def less(data):
 	process = subprocess.Popen(["less"], stdin=subprocess.PIPE)
-
 	try:
 		process.stdin.write(data.encode('UTF-8'))
 		process.communicate()
