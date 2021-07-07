@@ -27,3 +27,5 @@ This script can easily be installed by putting it in a directory in the PATH. It
 # Usage
 
 If you followed the installation steps, you should be able to launch the program from the terminal by typing `brightness`. Then you can set the brightness level with the slider. The "OK" button will apply what you current have, and the "Cancel" button will reset the slider to what it was. The monitor can be changed with the dropdown box.
+
+![Screenshot of Application](screenshot.png)
